@@ -6,8 +6,7 @@ import ServicesPage from './pages/ServicesPage'
 import AboutPage from './pages/AboutPage'
 import ResourcesPage from './pages/ResourcesPage'
 import ContactUploadPage from './pages/ContactUploadPage'
-import LoginPage from './pages/LoginPage'
-import SignupPage from './pages/SignupPage'
+import AuthPage from './pages/AuthPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 export default function App() {
@@ -21,8 +20,8 @@ export default function App() {
             <Route path="about" element={<AboutPage />} />
             <Route path="resources" element={<ResourcesPage />} />
             <Route path="contact" element={<ContactUploadPage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="signup" element={<SignupPage />} />
+            <Route path="login" element={<AuthPage />} />
+            <Route path="signup" element={<AuthPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
