@@ -15,9 +15,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Column 1 - Brand */}
           <div>
-            <Link to="/" className="inline-block mb-4 bg-white rounded-lg px-3 py-2">
+            <Link to="/" className="inline-block mb-4">
               <img
-                src="/assets/RichardsTaxNY-02.svg"
+                src="/assets/RichardsTaxNY-03.svg"
                 alt="Richards Tax NY"
                 className="h-20 w-auto"
               />

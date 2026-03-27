@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 424 112">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: .02em;
+      }
+
+      .cls-2 {
+        letter-spacing: 0em;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5, .cls-6 {
+        font-family: MyriadPro-Regular, 'Myriad Pro';
+      }
+
+      .cls-2, .cls-4, .cls-5, .cls-6 {
+        font-size: 48px;
+      }
+
+      .cls-7, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        font-size: 26px;
+      }
+
+      .cls-8 {
+        letter-spacing: -.06em;
+      }
+
+      .cls-4 {
+        letter-spacing: 0em;
+      }
+
+      .cls-5 {
+        letter-spacing: 0em;
+      }
+
+      .cls-9 {
+        letter-spacing: 0em;
+      }
+
+      .cls-10 {
+        letter-spacing: 0em;
+      }
+
+      .cls-11 {
+        letter-spacing: -.07em;
+      }
+
+      .cls-11, .cls-12, .cls-13 {
+        font-family: MyriadPro-Bold, 'Myriad Pro';
+        font-size: 46px;
+        font-weight: 700;
+      }
+
+      .cls-14 {
+        letter-spacing: 0em;
+      }
+
+      .cls-15 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-6 {
+        letter-spacing: 0em;
+      }
+
+      .cls-16 {
+        letter-spacing: 0em;
+      }
+
+      .cls-13 {
+        letter-spacing: -.02em;
+      }
+    </style>
+    <image id="image" width="1024" height="1024" xlink:href="C:\Users\jaymr\Downloads\ChatGPT Image Mar 26, 2026, 10_50_32 PM.png"/>
+  </defs>
+  <use transform="translate(-38 -20.49) scale(.18)" xlink:href="#image"/>
+  <g>
+    <text class="cls-7" transform="translate(111.21 68.49)"><tspan class="cls-4" x="0" y="0">R</tspan><tspan class="cls-2" x="26.3" y="0">icha</tspan><tspan class="cls-6" x="108.81" y="0">r</tspan><tspan class="cls-5" x="124.03" y="0">ds</tspan><tspan class="cls-11" x="170.11" y="0">T</tspan><tspan class="cls-12" x="192.28" y="0">ax</tspan><tspan class="cls-13" x="240.44" y="0">N</tspan><tspan class="cls-12" x="271.36" y="0">Y</tspan></text>
+    <text class="cls-3" transform="translate(137.07 105.2)"><tspan class="cls-8" x="0" y="0">T</tspan><tspan class="cls-10" x="11.26" y="0">ax &amp; </tspan><tspan class="cls-15" x="62.58" y="0">F</tspan><tspan x="74.57" y="0">inan</tspan><tspan class="cls-9" x="122.04" y="0">c</tspan><tspan x="133.53" y="0">e </tspan><tspan class="cls-14" x="152.07" y="0">S</tspan><tspan class="cls-16" x="165.05" y="0">e</tspan><tspan class="cls-1" x="178.07" y="0">r</tspan><tspan x="187.22" y="0">vi</tspan><tspan class="cls-9" x="205.81" y="0">c</tspan><tspan x="217.31" y="0">es</tspan></text>
+  </g>
+  <use transform="translate(-38 -173.49) scale(.18)" xlink:href="#image"/>
+</svg>
