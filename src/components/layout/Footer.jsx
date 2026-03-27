@@ -15,15 +15,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Column 1 - Brand */}
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
+            <Link to="/" className="inline-block mb-4">
               <img
                 src="/assets/RichardsTaxNY-02.svg"
                 alt="Richards Tax NY"
                 className="h-10 w-auto"
               />
-              <span className="text-xl font-bold text-white">
-                Richards Tax NY
-              </span>
             </Link>
             <p className="text-sm leading-relaxed mb-4">
               Professional tax preparation and advisory services for individuals
