@@ -38,13 +38,13 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-24 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="shrink-0">
             <img
               src="/assets/RichardsTaxNY-02.svg"
               alt="Richards Tax NY"
-              className="h-10 w-auto"
+              className="h-20 w-auto"
             />
           </Link>
 

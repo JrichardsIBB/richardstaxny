@@ -15,11 +15,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Column 1 - Brand */}
           <div>
-            <Link to="/" className="inline-block mb-4">
+            <Link to="/" className="inline-block mb-4 bg-white rounded-lg px-3 py-2">
               <img
                 src="/assets/RichardsTaxNY-02.svg"
                 alt="Richards Tax NY"
-                className="h-10 w-auto"
+                className="h-20 w-auto"
               />
             </Link>
             <p className="text-sm leading-relaxed mb-4">
