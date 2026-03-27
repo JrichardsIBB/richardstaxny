@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { FaGoogle, FaApple } from 'react-icons/fa';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const { signUp } = useAuth();
+  const { signUp, signInWithProvider } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -36,12 +37,48 @@ export default function SignupPage() {
     }
   }
 
+  async function handleOAuth(provider) {
+    try {
+      await signInWithProvider(provider);
+    } catch (err) {
+      toast.error(err.message || `Failed to sign up with ${provider}`);
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
         <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">
           Create Account
         </h1>
+
+        {/* OAuth Buttons */}
+        <div className="space-y-3 mb-6">
+          <button
+            onClick={() => handleOAuth('google')}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-medium text-gray-700 transition hover:bg-gray-50"
+          >
+            <FaGoogle className="text-lg text-red-500" />
+            Continue with Google
+          </button>
+          <button
+            onClick={() => handleOAuth('apple')}
+            className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-black px-4 py-2.5 font-medium text-white transition hover:bg-gray-900"
+          >
+            <FaApple className="text-lg" />
+            Continue with Apple
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-3 text-gray-500">or sign up with email</span>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
