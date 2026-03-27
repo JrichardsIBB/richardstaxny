@@ -38,9 +38,12 @@ export default function AboutPage() {
       {/* About */}
       <section className="mx-auto max-w-4xl px-4 py-20">
         <h2 className="text-2xl font-bold text-gray-900">
-          Meet Roy Richards
+          About RichardsTaxNY
         </h2>
-        <div className="mt-6 space-y-4 text-gray-700 leading-relaxed">
+        <h3 className="mt-2 text-lg font-semibold text-brand-blue-500">
+          Our Founder
+        </h3>
+        <div className="mt-4 space-y-4 text-gray-700 leading-relaxed">
           <p>
             Roy Richards began his journey in accounting at Borough of Manhattan
             Community College, earning his degree before joining H&R Block in
