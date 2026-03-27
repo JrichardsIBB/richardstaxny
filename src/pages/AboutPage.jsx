@@ -38,31 +38,28 @@ export default function AboutPage() {
       {/* About */}
       <section className="mx-auto max-w-4xl px-4 py-20">
         <h2 className="text-2xl font-bold text-gray-900">
-          Who We Are
+          Meet Roy Richards
         </h2>
         <div className="mt-6 space-y-4 text-gray-700 leading-relaxed">
           <p>
-            Richards Tax NY was founded with a simple mission: to provide
-            reliable, accurate, and affordable tax services to individuals and
-            businesses throughout New York. With over 15 years of experience in
-            tax preparation, planning, and advisory, our founder brings deep
-            expertise and a genuine passion for helping clients achieve financial
-            peace of mind.
+            Roy Richards began his journey in accounting at Borough of Manhattan
+            Community College, earning his degree before joining H&R Block in
+            1985. With over four decades of tax preparation experience, Roy has
+            helped countless individuals and businesses navigate their finances
+            with confidence.
           </p>
           <p>
-            As a credentialed tax professional (CPA/EA), our founder stays at
-            the forefront of federal and New York State tax law, ensuring every
-            return is prepared with precision and every strategy is built on
-            current regulations. From first-time filers to complex business
-            entities, we treat every client with the same level of care and
-            attention to detail.
+            At Richards Tax and Finance Services, Roy is passionate about
+            ensuring clients get the maximum return they deserve. He offers not
+            only personal and business tax preparation, but also financial
+            guidance—helping clients make wise investments and plan for their
+            future.
           </p>
           <p>
-            Our mission is to make tax season stress-free. We believe everyone
-            deserves access to professional tax guidance without the
-            intimidation or jargon. Whether you visit us in person or work with
-            us remotely, you can count on personalized service and
-            straightforward advice.
+            Whether you need bookkeeping, tax advice, or help with your business
+            returns, Roy brings the same care and expertise to every client. His
+            mission is simple: to make taxes stress-free and to help you thrive
+            financially.
           </p>
         </div>
       </section>
