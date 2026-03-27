@@ -1,0 +1,32 @@
+import { BrowserRouter, Routes, Route } from 'react-router'
+import { AuthProvider } from './context/AuthContext'
+import Layout from './components/layout/Layout'
+import HomePage from './pages/HomePage'
+import ServicesPage from './pages/ServicesPage'
+import AboutPage from './pages/AboutPage'
+import ResourcesPage from './pages/ResourcesPage'
+import ContactUploadPage from './pages/ContactUploadPage'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+import NotFoundPage from './pages/NotFoundPage'
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="services" element={<ServicesPage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="resources" element={<ResourcesPage />} />
+            <Route path="contact" element={<ContactUploadPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignupPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  )
+}
