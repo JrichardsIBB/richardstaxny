@@ -17,7 +17,7 @@ export default function Footer() {
           <div>
             <Link to="/" className="inline-block mb-4">
               <img
-                src="/assets/RichardsTaxNY-03.svg"
+                src="/assets/RichardsTaxNY-03.png"
                 alt="Richards Tax NY"
                 className="h-20 w-auto"
               />
