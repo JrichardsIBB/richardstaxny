@@ -40,15 +40,12 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
+          <Link to="/" className="shrink-0">
             <img
               src="/assets/RichardsTaxNY-01.svg"
               alt="Richards Tax NY"
-              className="h-10 w-auto"
+              className="h-14 w-auto"
             />
-            <span className="text-lg font-bold text-brand-blue-500 hidden sm:inline">
-              Richards Tax NY
-            </span>
           </Link>
 
           {/* Desktop nav links */}
