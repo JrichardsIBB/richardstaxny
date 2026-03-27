@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -13,6 +13,10 @@ const STATUS_COLORS = {
   complete: 'bg-green-100 text-green-800',
 };
 
+function sanitizeFileName(name) {
+  return name.replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
 export default function DocumentUploader() {
   const { user } = useAuth();
 
@@ -22,6 +26,7 @@ export default function DocumentUploader() {
   const [uploading, setUploading] = useState(false);
   const [uploads, setUploads] = useState([]);
   const [loadingUploads, setLoadingUploads] = useState(true);
+  const uploadingRef = useRef(false);
 
   // Pre-fill from user email
   useEffect(() => {
@@ -45,7 +50,8 @@ export default function DocumentUploader() {
         .from('document_uploads')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50);
       if (error) throw error;
       setUploads(data || []);
     } catch (err) {
@@ -64,6 +70,7 @@ export default function DocumentUploader() {
   }
 
   async function handleUpload() {
+    if (uploadingRef.current) return;
     if (files.length === 0) {
       toast.error('Please select at least one file.');
       return;
@@ -73,11 +80,13 @@ export default function DocumentUploader() {
       return;
     }
 
+    uploadingRef.current = true;
     setUploading(true);
     let successCount = 0;
 
     for (const file of files) {
-      const filePath = `${user.id}/${Date.now()}-${file.name}`;
+      const safeName = sanitizeFileName(file.name);
+      const filePath = `${user.id}/${Date.now()}-${safeName}`;
 
       try {
         // Upload to storage
@@ -93,7 +102,7 @@ export default function DocumentUploader() {
             user_id: user.id,
             client_name: clientName.trim(),
             client_email: clientEmail.trim(),
-            file_name: file.name,
+            file_name: safeName,
             file_path: filePath,
             file_size: file.size,
             file_type: file.type,
@@ -102,9 +111,9 @@ export default function DocumentUploader() {
         if (dbError) throw dbError;
 
         successCount++;
-        toast.success(`Uploaded: ${file.name}`);
+        toast.success(`Uploaded: ${safeName}`);
       } catch (err) {
-        toast.error(`Failed to upload ${file.name}: ${err.message}`);
+        toast.error(`Failed to upload ${safeName}: ${err.message}`);
       }
     }
 
@@ -114,6 +123,7 @@ export default function DocumentUploader() {
     }
 
     setUploading(false);
+    uploadingRef.current = false;
   }
 
   function formatDate(dateStr) {
