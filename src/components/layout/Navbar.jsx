@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Link } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
+import { useAdmin } from '../../context/AdminContext';
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -33,6 +34,7 @@ function NavItem({ to, label, onClick }) {
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { isStaff } = useAdmin();
 
   const closeMobile = () => setMobileOpen(false);
 
@@ -58,6 +60,14 @@ export default function Navbar() {
 
           {/* Desktop auth buttons */}
           <div className="hidden md:flex items-center gap-3">
+            {user && isStaff && (
+              <Link
+                to="/admin"
+                className="rounded-lg bg-brand-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-blue-700"
+              >
+                Admin
+              </Link>
+            )}
             {user ? (
               <button
                 onClick={signOut}
@@ -115,6 +125,15 @@ export default function Navbar() {
             </div>
           ))}
           <div className="border-t border-gray-100 pt-3 flex flex-col gap-2">
+            {user && isStaff && (
+              <Link
+                to="/admin"
+                onClick={closeMobile}
+                className="rounded-lg bg-brand-blue-600 px-4 py-2 text-sm font-medium text-white text-center"
+              >
+                Admin Dashboard
+              </Link>
+            )}
             {user ? (
               <button
                 onClick={() => {

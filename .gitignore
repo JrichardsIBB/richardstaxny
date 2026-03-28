@@ -24,3 +24,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Service account keys
+*.gserviceaccount.json
+richardstaxny-*.json
