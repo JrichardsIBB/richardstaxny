@@ -142,7 +142,7 @@ export default function Navbar() {
             <img
               src="/assets/RichardsTaxNY-02.svg"
               alt="Richards Tax NY"
-              className="h-20 w-auto"
+              className="h-17 w-auto"
             />
           </Link>
 

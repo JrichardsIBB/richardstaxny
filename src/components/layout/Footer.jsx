@@ -20,7 +20,7 @@ export default function Footer() {
               <img
                 src="/assets/RichardsTaxNY-03.png"
                 alt="Richards Tax NY"
-                className="h-20 w-auto"
+                className="h-17 w-auto"
               />
             </Link>
             <p className="text-sm leading-relaxed mb-4">
