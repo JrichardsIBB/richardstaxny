@@ -13,29 +13,58 @@ const ROLE_COLORS = {
 };
 
 export default function AdminUsers() {
-  const { isOwner } = useAdmin();
+  const { isOwner, profile: myProfile } = useAdmin();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+
+  async function fetchUsers() {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('role')
+        .order('created_at', { ascending: false });
+
+      setUsers(data || []);
+    } catch (err) {
+      console.error('Fetch users error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('role')
-          .order('created_at', { ascending: false });
-
-        setUsers(data || []);
-      } catch (err) {
-        console.error('Fetch users error:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchUsers();
   }, []);
+
+  async function handleDeleteUser(userId, userName) {
+    const confirmed = window.confirm(`Are you sure you want to delete "${userName}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    setDeletingId(userId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const resp = await fetch('/api/admin/delete-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ user_id: userId }),
+      });
+
+      const result = await resp.json();
+      if (!resp.ok) throw new Error(result.error);
+
+      toast.success(result.message);
+      fetchUsers();
+    } catch (err) {
+      toast.error(`Failed: ${err.message}`);
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   async function handleRoleChange(userId, newRole) {
     try {
@@ -109,6 +138,7 @@ export default function AdminUsers() {
                 <th className="px-6 py-3 text-left font-medium text-gray-600">Current Role</th>
                 <th className="px-6 py-3 text-left font-medium text-gray-600">Change Role</th>
                 <th className="px-6 py-3 text-left font-medium text-gray-600">Joined</th>
+                <th className="px-6 py-3 text-right font-medium text-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -151,6 +181,17 @@ export default function AdminUsers() {
                       day: 'numeric',
                       year: 'numeric',
                     })}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    {u.role !== 'owner' && u.id !== myProfile?.id && (
+                      <button
+                        onClick={() => handleDeleteUser(u.id, u.full_name || u.email)}
+                        disabled={deletingId === u.id}
+                        className="text-xs px-2.5 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200 disabled:opacity-50 transition"
+                      >
+                        {deletingId === u.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
