@@ -22,6 +22,7 @@ import AdminClients from './pages/admin/AdminClients'
 import AdminProcessing from './pages/admin/AdminProcessing'
 import AdminExports from './pages/admin/AdminExports'
 import AdminUsers from './pages/admin/AdminUsers'
+import AdminClientImports from './pages/admin/AdminClientImports'
 import TaxBot from './components/TaxBot'
 
 export default function App() {
@@ -60,6 +61,7 @@ export default function App() {
               <Route path="clients" element={<AdminClients />} />
               <Route path="processing" element={<AdminProcessing />} />
               <Route path="exports" element={<AdminExports />} />
+              <Route path="invites" element={<AdminClientImports />} />
               <Route
                 path="users"
                 element={
