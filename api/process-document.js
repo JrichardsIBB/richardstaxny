@@ -49,6 +49,15 @@ const DOC_CATEGORIES = {
   },
 };
 
+// Helper to extract text from a Document AI layout using text anchors
+function extractTextFromLayout(layout, fullText) {
+  if (!layout?.textAnchor?.textSegments || !fullText) return '';
+  return layout.textAnchor.textSegments
+    .map((seg) => fullText.substring(parseInt(seg.startIndex || 0), parseInt(seg.endIndex || 0)))
+    .join(' ')
+    .trim();
+}
+
 function classifyDocument(extractedText) {
   const lower = extractedText.toLowerCase();
   let bestCategory = 'other';
@@ -271,6 +280,67 @@ export default async function handler(req, res) {
 
       ocrResult = await docAIResponse.json();
       extractedText = ocrResult.document?.text || '';
+
+      // Extract form fields from Document AI entities and formFields
+      const docAIFields = [];
+
+      // Parse entities (key-value pairs detected by Document AI)
+      if (ocrResult.document?.entities) {
+        for (const entity of ocrResult.document.entities) {
+          docAIFields.push({
+            field_name: entity.type || entity.mentionText?.substring(0, 50) || 'unknown',
+            field_value: entity.mentionText || entity.normalizedValue?.text || '',
+            confidence: entity.confidence || 0.5,
+          });
+        }
+      }
+
+      // Parse formFields from pages (label-value pairs from forms)
+      if (ocrResult.document?.pages) {
+        for (const page of ocrResult.document.pages) {
+          if (page.formFields) {
+            for (const field of page.formFields) {
+              const label = field.fieldName?.textAnchor?.content
+                || extractTextFromLayout(field.fieldName, extractedText)
+                || '';
+              const value = field.fieldValue?.textAnchor?.content
+                || extractTextFromLayout(field.fieldValue, extractedText)
+                || '';
+
+              if (label.trim() || value.trim()) {
+                docAIFields.push({
+                  field_name: label.trim().replace(/[:\s]+$/g, '').substring(0, 100),
+                  field_value: value.trim(),
+                  confidence: Math.min(field.fieldName?.confidence || 0.5, field.fieldValue?.confidence || 0.5),
+                });
+              }
+            }
+          }
+
+          // Also extract detected key-value pairs from tables
+          if (page.tables) {
+            for (const table of page.tables) {
+              for (const row of table.bodyRows || []) {
+                const cells = row.cells || [];
+                if (cells.length >= 2) {
+                  const key = extractTextFromLayout(cells[0]?.layout, extractedText) || '';
+                  const val = extractTextFromLayout(cells[1]?.layout, extractedText) || '';
+                  if (key.trim() && val.trim()) {
+                    docAIFields.push({
+                      field_name: key.trim().substring(0, 100),
+                      field_value: val.trim(),
+                      confidence: 0.7,
+                    });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Store Document AI fields for later use
+      ocrResult._extractedFields = docAIFields;
     } else {
       // Fallback: basic text extraction for PDFs (no OCR)
       // For images without Document AI, we can only classify by filename
@@ -300,8 +370,32 @@ export default async function handler(req, res) {
     // Extract tax year
     const docYear = extractYear(extractedText);
 
-    // Extract fields based on classification
-    const fields = extractFieldsFromText(extractedText, classification.expectedFields);
+    // Extract fields — prefer Document AI fields, fall back to text extraction
+    let fields = [];
+    const docAIExtracted = ocrResult?._extractedFields || [];
+
+    if (docAIExtracted.length > 0) {
+      // Use Document AI extracted fields directly
+      fields = docAIExtracted.filter((f) => f.field_name && f.field_name !== 'unknown');
+
+      // If Document AI found fields, boost classification confidence
+      if (fields.length > 0) {
+        classification.confidence = Math.max(classification.confidence, 0.75);
+      }
+    }
+
+    // Also add expected fields from classification that Document AI may have missed
+    const textFields = extractFieldsFromText(extractedText, classification.expectedFields);
+    for (const tf of textFields) {
+      // Only add if not already covered by Document AI
+      const alreadyExists = fields.some((f) =>
+        f.field_name.toLowerCase().includes(tf.field_name.toLowerCase()) ||
+        tf.field_name.toLowerCase().includes(f.field_name.toLowerCase())
+      );
+      if (!alreadyExists && tf.field_value) {
+        fields.push(tf);
+      }
+    }
 
     // Save extraction results
     if (fields.length > 0) {
