@@ -14,6 +14,7 @@ import AuthPage from './pages/AuthPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
+import MessagesPage from './pages/MessagesPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminDocuments from './pages/admin/AdminDocuments'
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="contact" element={<ContactUploadPage />} />
               <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               <Route path="settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
               <Route path="login" element={<AuthPage />} />
               <Route path="signup" element={<AuthPage />} />
               <Route path="*" element={<NotFoundPage />} />

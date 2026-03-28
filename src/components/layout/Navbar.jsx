@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { NavLink, Link } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import { useAdmin } from '../../context/AdminContext';
+import NotificationBell from '../NotificationBell';
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -166,12 +167,15 @@ export default function Navbar() {
           {/* Desktop auth */}
           <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <UserAvatar
-                user={user}
-                profile={profile}
-                isStaff={isStaff}
-                signOut={signOut}
-              />
+              <>
+                <NotificationBell />
+                <UserAvatar
+                  user={user}
+                  profile={profile}
+                  isStaff={isStaff}
+                  signOut={signOut}
+                />
+              </>
             ) : (
               <>
                 <Link
