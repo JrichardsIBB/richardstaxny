@@ -12,6 +12,9 @@ import ContactUploadPage from './pages/ContactUploadPage'
 import HelpCenterPage from './pages/HelpCenterPage'
 import AuthPage from './pages/AuthPage'
 import NotFoundPage from './pages/NotFoundPage'
+import ProfilePage from './pages/ProfilePage'
+import SettingsPage from './pages/SettingsPage'
+import ProtectedRoute from './components/ProtectedRoute'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminDocuments from './pages/admin/AdminDocuments'
 import AdminClients from './pages/admin/AdminClients'
@@ -34,6 +37,8 @@ export default function App() {
               <Route path="resources" element={<ResourcesPage />} />
               <Route path="help" element={<HelpCenterPage />} />
               <Route path="contact" element={<ContactUploadPage />} />
+              <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="login" element={<AuthPage />} />
               <Route path="signup" element={<AuthPage />} />
               <Route path="*" element={<NotFoundPage />} />
