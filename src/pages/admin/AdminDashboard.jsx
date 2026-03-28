@@ -29,6 +29,7 @@ export default function AdminDashboard() {
     approvedDocs: 0,
     errorDocs: 0,
     totalClients: 0,
+    totalEarnings: 0,
   });
   const [recentDocs, setRecentDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +68,14 @@ export default function AdminDashboard() {
 
         counts.totalClients = clients?.length || 0;
 
+        // Fetch total earnings
+        const { data: earningsData } = await supabase
+          .from('earnings')
+          .select('amount, status')
+          .neq('status', 'cancelled');
+
+        counts.totalEarnings = (earningsData || []).reduce((s, e) => s + parseFloat(e.amount), 0);
+
         setStats(counts);
 
         // Fetch recent documents
@@ -103,7 +112,14 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <StatCard
+          label="Total Earnings"
+          value={`$${stats.totalEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+          icon="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          color="bg-green-500"
+          to="/admin/earnings"
+        />
         <StatCard
           label="Total Documents"
           value={stats.totalDocs}
