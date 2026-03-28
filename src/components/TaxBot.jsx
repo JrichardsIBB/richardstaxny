@@ -229,16 +229,34 @@ export default function TaxBot() {
   }, [messages]);
 
   async function getResponse(text) {
-    // Try local knowledge base first
+    const lower = text.toLowerCase();
+
+    // Check if this is an IRS form/process query — search IRS first
+    const irsTerms = ['w-2', 'w2', '1040', '1099', '1098', '1095', '4868', 'schedule',
+      'k-1', 'k1', '941', '1120', '1065', 'form', 'irs', 'file tax', 'filing',
+      'refund', 'transcript', 'payment plan', 'amend', 'ein', 'estimated tax',
+      'identity theft', 'bracket', 'deduction', 'standard deduction', 'eitc',
+      'child tax credit', 'self-employment', 'sole proprietor', 'quarterly'];
+
+    const isIRSQuery = irsTerms.some((term) => lower.includes(term));
+
+    if (isIRSQuery) {
+      const irsResponse = await searchIRS(text);
+      if (irsResponse) return irsResponse;
+    }
+
+    // Try local knowledge base
     const localResponse = getLocalResponse(text);
     if (localResponse) return localResponse;
 
-    // Search IRS database
-    const irsResponse = await searchIRS(text);
-    if (irsResponse) return irsResponse;
+    // If not an IRS query, still try IRS as fallback
+    if (!isIRSQuery) {
+      const irsResponse = await searchIRS(text);
+      if (irsResponse) return irsResponse;
+    }
 
     // Default fallback
-    return `Great question! I searched the IRS database but couldn't find an exact match. For personalized help, please visit our Contact page or call us at (718) 622-4951. You can also check our Help Center for common tax questions!`;
+    return `Great question! I searched our knowledge base and the IRS database but couldn't find an exact match. For personalized help, please visit our Contact page or call us at (718) 622-4951. You can also check our Help Center for common tax questions!`;
   }
 
   async function handleSend(e) {
