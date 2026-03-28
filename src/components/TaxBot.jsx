@@ -85,14 +85,11 @@ const knowledgeBase = [
   },
 ];
 
-function getBotResponse(message) {
+function getLocalResponse(message) {
   const lower = message.toLowerCase().trim();
 
-  if (!lower) {
-    return `I'm ${BOT_NAME}, your tax assistant! Ask me anything about taxes, our services, or how to use this site.`;
-  }
+  if (!lower) return null;
 
-  // Find best matching response
   let bestMatch = null;
   let bestScore = 0;
 
@@ -100,7 +97,7 @@ function getBotResponse(message) {
     let score = 0;
     for (const keyword of entry.keywords) {
       if (lower.includes(keyword)) {
-        score += keyword.length; // Longer keyword matches score higher
+        score += keyword.length;
       }
     }
     if (score > bestScore) {
@@ -113,7 +110,98 @@ function getBotResponse(message) {
     return bestMatch.response;
   }
 
-  return `Great question! I'm still learning, so I may not have the perfect answer for that yet. For personalized help, please visit our Contact page or call us at (718) 622-4951. You can also check our Help Center for common tax questions!`;
+  return null;
+}
+
+function formatIRSResponse(results) {
+  let response = '';
+
+  if (results.forms && results.forms.length > 0) {
+    const form = results.forms[0];
+    response += `**${form.name}: ${form.title}**\n\n`;
+    response += `${form.description}\n\n`;
+    if (form.who_files) response += `Who files: ${form.who_files}\n`;
+    if (form.deadline) response += `Deadline: ${form.deadline}\n`;
+    if (form.key_boxes) response += `Key fields: ${form.key_boxes}\n`;
+    response += `\nMore info: ${form.url}`;
+
+    if (results.forms.length > 1) {
+      response += '\n\nRelated forms: ' + results.forms.slice(1, 3).map((f) => f.name).join(', ');
+    }
+  }
+
+  if (results.processes && results.processes.length > 0 && !response) {
+    const proc = results.processes[0];
+    response += `**${proc.title}**\n\n`;
+    proc.steps.forEach((step, i) => {
+      response += `${i + 1}. ${step}\n`;
+    });
+    response += `\nMore info: ${proc.url}`;
+  }
+
+  if (results.taxInfo && !response) {
+    const info = results.taxInfo;
+    response += '**2025 Standard Deductions:**\n';
+    response += `Single: $${info.standard_deductions.single.toLocaleString()}\n`;
+    response += `Married Filing Jointly: $${info.standard_deductions.married_joint.toLocaleString()}\n`;
+    response += `Head of Household: $${info.standard_deductions.head_of_household.toLocaleString()}\n`;
+    response += `\nChild Tax Credit: $${info.child_tax_credit.toLocaleString()} per child\n`;
+    response += `Social Security Wage Base: $${info.social_security_wage_base.toLocaleString()}`;
+  }
+
+  return response;
+}
+
+async function searchIRS(query) {
+  try {
+    const resp = await fetch(`/api/irs-search?q=${encodeURIComponent(query)}`);
+    if (!resp.ok) return null;
+    const results = await resp.json();
+    if (results.forms?.length > 0 || results.processes?.length > 0 || results.taxInfo) {
+      return formatIRSResponse(results);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function BotMessage({ text, isUser }) {
+  if (isUser) return <span>{text}</span>;
+
+  // Render formatted bot messages (bold, links, newlines)
+  const lines = text.split('\n');
+  return (
+    <span className="whitespace-pre-wrap">
+      {lines.map((line, i) => {
+        // Bold text: **text**
+        const parts = line.split(/(\*\*[^*]+\*\*)/g);
+        return (
+          <span key={i}>
+            {parts.map((part, j) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={j} className="font-semibold">{part.slice(2, -2)}</strong>;
+              }
+              // Links: https://...
+              const linkParts = part.split(/(https?:\/\/[^\s]+)/g);
+              return linkParts.map((lp, k) => {
+                if (lp.match(/^https?:\/\//)) {
+                  return (
+                    <a key={k} href={lp} target="_blank" rel="noopener noreferrer"
+                      className="text-brand-blue-500 underline hover:text-brand-blue-600 break-all">
+                      IRS.gov Link
+                    </a>
+                  );
+                }
+                return <span key={k}>{lp}</span>;
+              });
+            })}
+            {i < lines.length - 1 && '\n'}
+          </span>
+        );
+      })}
+    </span>
+  );
 }
 
 export default function TaxBot() {
@@ -140,7 +228,20 @@ export default function TaxBot() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  function handleSend(e) {
+  async function getResponse(text) {
+    // Try local knowledge base first
+    const localResponse = getLocalResponse(text);
+    if (localResponse) return localResponse;
+
+    // Search IRS database
+    const irsResponse = await searchIRS(text);
+    if (irsResponse) return irsResponse;
+
+    // Default fallback
+    return `Great question! I searched the IRS database but couldn't find an exact match. For personalized help, please visit our Contact page or call us at (718) 622-4951. You can also check our Help Center for common tax questions!`;
+  }
+
+  async function handleSend(e) {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -148,19 +249,28 @@ export default function TaxBot() {
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
 
-    // Simulate typing delay
-    setTimeout(() => {
-      const botResponse = getBotResponse(userMsg.text);
-      setMessages((prev) => [...prev, { from: 'bot', text: botResponse }]);
-    }, 600);
+    // Show typing indicator
+    setMessages((prev) => [...prev, { from: 'bot', text: '...', typing: true }]);
+
+    const botResponse = await getResponse(userMsg.text);
+
+    // Replace typing indicator with response
+    setMessages((prev) => [
+      ...prev.filter((m) => !m.typing),
+      { from: 'bot', text: botResponse },
+    ]);
   }
 
-  function handleQuickAction(text) {
+  async function handleQuickAction(text) {
     setMessages((prev) => [...prev, { from: 'user', text }]);
-    setTimeout(() => {
-      const botResponse = getBotResponse(text);
-      setMessages((prev) => [...prev, { from: 'bot', text: botResponse }]);
-    }, 600);
+    setMessages((prev) => [...prev, { from: 'bot', text: '...', typing: true }]);
+
+    const botResponse = await getResponse(text);
+
+    setMessages((prev) => [
+      ...prev.filter((m) => !m.typing),
+      { from: 'bot', text: botResponse },
+    ]);
   }
 
   return (
@@ -259,13 +369,21 @@ export default function TaxBot() {
                 className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                     msg.from === 'user'
                       ? 'bg-brand-blue-500 text-white rounded-br-md'
                       : 'bg-white text-gray-700 border border-gray-200 rounded-bl-md shadow-sm'
-                  }`}
+                  } ${msg.typing ? 'animate-pulse' : ''}`}
                 >
-                  {msg.text}
+                  {msg.typing ? (
+                    <span className="flex gap-1 py-1">
+                      <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </span>
+                  ) : (
+                    <BotMessage text={msg.text} isUser={msg.from === 'user'} />
+                  )}
                 </div>
               </div>
             ))}
@@ -275,7 +393,7 @@ export default function TaxBot() {
           {/* Quick Actions (only show at start) */}
           {messages.length <= 1 && (
             <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-1.5">
-              {['What documents do I need?', 'Your services', 'How to upload files', 'Office hours'].map(
+              {['What is a W-2?', 'How to file taxes', 'Check my refund', 'Tax brackets 2025'].map(
                 (action) => (
                   <button
                     key={action}
