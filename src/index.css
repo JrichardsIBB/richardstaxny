@@ -35,6 +35,12 @@
   }
 }
 
+/* Help Center search placeholder */
+.help-search::placeholder {
+  color: white;
+  opacity: 1;
+}
+
 /* TaxBot animations */
 @keyframes bounce-in {
   0% { opacity: 0; transform: scale(0.8) translateY(10px); }

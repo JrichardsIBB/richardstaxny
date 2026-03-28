@@ -223,7 +223,7 @@ export default function HelpCenterPage() {
               placeholder="Search for answers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border-0 py-3.5 pl-12 pr-4 text-gray-800 placeholder-white shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="w-full rounded-xl border-0 py-3.5 pl-12 pr-4 text-gray-800 shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50 help-search"
             />
           </div>
         </div>
