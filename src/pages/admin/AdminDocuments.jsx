@@ -92,6 +92,35 @@ export default function AdminDocuments() {
     }
   }
 
+  async function handleRetry(docId) {
+    try {
+      // Reset status to pending, clear error
+      await supabase
+        .from('document_uploads')
+        .update({ processing_status: 'pending', error_message: null })
+        .eq('id', docId);
+
+      toast.success('Document reset — reprocessing...');
+      // Now process it
+      await handleProcess(docId);
+    } catch (err) {
+      toast.error(`Retry failed: ${err.message}`);
+    }
+  }
+
+  async function handleClearJobs() {
+    try {
+      await supabase
+        .from('processing_jobs')
+        .delete()
+        .in('status', ['failed', 'completed']);
+
+      toast.success('Old processing jobs cleared');
+    } catch (err) {
+      toast.error('Failed to clear jobs');
+    }
+  }
+
   async function handleApprove(docId) {
     try {
       await supabase
@@ -237,6 +266,15 @@ export default function AdminDocuments() {
                               className="text-xs px-2.5 py-1 rounded bg-brand-blue-500 text-white hover:bg-brand-blue-600 disabled:opacity-50"
                             >
                               Process
+                            </button>
+                          )}
+                          {(doc.processing_status === 'error') && (
+                            <button
+                              onClick={() => handleRetry(doc.id)}
+                              disabled={processing}
+                              className="text-xs px-2.5 py-1 rounded bg-orange-500 text-white hover:bg-orange-600 disabled:opacity-50"
+                            >
+                              Retry
                             </button>
                           )}
                           {(doc.processing_status === 'extracted' || doc.processing_status === 'review') && (
