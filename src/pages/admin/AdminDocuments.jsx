@@ -93,18 +93,32 @@ export default function AdminDocuments() {
   }
 
   async function handleRetry(docId) {
+    setProcessing(true);
     try {
-      // Reset status to pending, clear error
-      await supabase
-        .from('document_uploads')
-        .update({ processing_status: 'pending', error_message: null })
-        .eq('id', docId);
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Reset status via admin API
+      const resetResp = await fetch('/api/admin/documents', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ document_id: docId, processing_status: 'pending' }),
+      });
+
+      if (!resetResp.ok) {
+        const err = await resetResp.json();
+        throw new Error(err.error || 'Failed to reset document');
+      }
 
       toast.success('Document reset — reprocessing...');
       // Now process it
       await handleProcess(docId);
     } catch (err) {
       toast.error(`Retry failed: ${err.message}`);
+    } finally {
+      setProcessing(false);
     }
   }
 
