@@ -5,7 +5,7 @@
  */
 
 // Comprehensive IRS forms database
-const IRS_FORMS = {
+export const IRS_FORMS = {
   'w-2': {
     name: 'Form W-2',
     title: 'Wage and Tax Statement',
@@ -152,7 +152,7 @@ const IRS_FORMS = {
 };
 
 // IRS processes and procedures
-const IRS_PROCESSES = {
+export const IRS_PROCESSES = {
   'file taxes': {
     title: 'How to File Your Tax Return',
     steps: [
@@ -248,7 +248,7 @@ const IRS_PROCESSES = {
 };
 
 // Tax brackets and standard deductions (2025)
-const TAX_INFO_2025 = {
+export const TAX_INFO_2025 = {
   standard_deductions: {
     single: 15000,
     married_joint: 30000,

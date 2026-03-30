@@ -174,13 +174,16 @@ function BotMessage({ text, isUser }) {
   return (
     <span className="whitespace-pre-wrap">
       {lines.map((line, i) => {
-        // Bold text: **text**
-        const parts = line.split(/(\*\*[^*]+\*\*)/g);
+        // Bold text: **text** and italic: *text*
+        const parts = line.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
         return (
           <span key={i}>
             {parts.map((part, j) => {
               if (part.startsWith('**') && part.endsWith('**')) {
                 return <strong key={j} className="font-semibold">{part.slice(2, -2)}</strong>;
+              }
+              if (part.startsWith('*') && part.endsWith('*') && !part.startsWith('**')) {
+                return <em key={j} className="text-gray-500 text-xs">{part.slice(1, -1)}</em>;
               }
               // Links: https://...
               const linkParts = part.split(/(https?:\/\/[^\s]+)/g);
@@ -211,10 +214,11 @@ export default function TaxBot() {
   const [messages, setMessages] = useState([
     {
       from: 'bot',
-      text: `Hi! I'm ${BOT_NAME}, your tax assistant at Richards Tax NY. How can I help you today?`,
+      text: `Hi! I'm ${BOT_NAME}, your AI tax assistant at Richards Tax NY. I can answer tax questions, look up IRS forms, check deadlines, and more. How can I help you today?\n\n*I provide general tax info, not personal tax advice.*`,
     },
   ]);
   const [input, setInput] = useState('');
+  const [conversationHistory, setConversationHistory] = useState([]);
   const messagesEndRef = useRef(null);
 
   // Nudge message after 15 seconds of inactivity
@@ -229,34 +233,43 @@ export default function TaxBot() {
   }, [messages]);
 
   async function getResponse(text) {
-    const lower = text.toLowerCase();
+    // Try AI-powered response first
+    try {
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: conversationHistory,
+        }),
+      });
 
-    // Check if this is an IRS form/process query — search IRS first
-    const irsTerms = ['w-2', 'w2', '1040', '1099', '1098', '1095', '4868', 'schedule',
-      'k-1', 'k1', '941', '1120', '1065', 'form', 'irs', 'file tax', 'filing',
-      'refund', 'transcript', 'payment plan', 'amend', 'ein', 'estimated tax',
-      'identity theft', 'bracket', 'deduction', 'standard deduction', 'eitc',
-      'child tax credit', 'self-employment', 'sole proprietor', 'quarterly'];
-
-    const isIRSQuery = irsTerms.some((term) => lower.includes(term));
-
-    if (isIRSQuery) {
-      const irsResponse = await searchIRS(text);
-      if (irsResponse) return irsResponse;
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.response) {
+          // Update conversation history
+          setConversationHistory((prev) => [
+            ...prev.slice(-18), // Keep last 9 exchanges (18 messages)
+            { role: 'user', content: text },
+            { role: 'assistant', content: data.response },
+          ]);
+          return data.response;
+        }
+      }
+    } catch (err) {
+      console.warn('AI chat unavailable, falling back to local:', err.message);
     }
 
-    // Try local knowledge base
+    // Fallback: try local knowledge base
     const localResponse = getLocalResponse(text);
     if (localResponse) return localResponse;
 
-    // If not an IRS query, still try IRS as fallback
-    if (!isIRSQuery) {
-      const irsResponse = await searchIRS(text);
-      if (irsResponse) return irsResponse;
-    }
+    // Fallback: try IRS search
+    const irsResponse = await searchIRS(text);
+    if (irsResponse) return irsResponse;
 
     // Default fallback
-    return `Great question! I searched our knowledge base and the IRS database but couldn't find an exact match. For personalized help, please visit our Contact page or call us at (718) 622-4951. You can also check our Help Center for common tax questions!`;
+    return `Great question! For personalized help, please visit our Contact page or call us at (718) 622-4951.`;
   }
 
   async function handleSend(e) {
@@ -411,7 +424,7 @@ export default function TaxBot() {
           {/* Quick Actions (only show at start) */}
           {messages.length <= 1 && (
             <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex flex-wrap gap-1.5">
-              {['What is a W-2?', 'How to file taxes', 'Check my refund', 'Tax brackets 2025'].map(
+              {['What documents do I need to file?', 'What are the 2025 tax brackets?', 'How do I check my refund?', 'What services do you offer?'].map(
                 (action) => (
                   <button
                     key={action}
