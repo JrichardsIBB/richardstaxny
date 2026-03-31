@@ -30,18 +30,14 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-brand-blue-500">
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-blue-600/60 to-brand-blue-400/30" />
-        {/* Subtle pattern */}
+      <section className="relative overflow-hidden">
+        {/* Background image */}
         <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px',
-          }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/assets/hero-bg.png')" }}
         />
+        {/* Blue overlay at 40% opacity */}
+        <div className="absolute inset-0 bg-brand-blue-500/40" />
 
         <div className="relative mx-auto max-w-6xl px-4 py-24 sm:py-32 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
