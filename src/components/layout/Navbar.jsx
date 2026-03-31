@@ -140,7 +140,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/" className="shrink-0">
             <img
-              src="/assets/RichardsTaxNY-02.svg"
+              src="/assets/RichardsTaxNY-02.png"
               alt="Richards Tax NY"
               className="h-17 w-auto"
             />

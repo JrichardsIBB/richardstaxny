@@ -49,7 +49,7 @@ export default function AdminLayout() {
         {/* Logo */}
         <div className="flex h-16 items-center px-4 border-b border-gray-100">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/assets/RichardsTaxNY-02.svg" alt="Richards Tax NY" className="h-10 w-auto" />
+            <img src="/assets/RichardsTaxNY-02.png" alt="Richards Tax NY" className="h-10 w-auto" />
           </Link>
         </div>
 
