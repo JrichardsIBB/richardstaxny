@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mytaxprep": {
+      "command": "node",
+      "args": ["mcp-mytaxprep/dist/index.js"],
+      "cwd": "E:/Projects/clients/RichardsTaxNY"
+    }
+  }
+}
