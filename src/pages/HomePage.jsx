@@ -37,7 +37,7 @@ export default function HomePage() {
           style={{ backgroundImage: "url('/assets/hero-bg.png')" }}
         />
         {/* Blue overlay at 40% opacity */}
-        <div className="absolute inset-0 bg-brand-blue-500/40" />
+        <div className="absolute inset-0 bg-brand-blue-500/60" />
 
         <div className="relative mx-auto max-w-6xl px-4 py-24 sm:py-32 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
